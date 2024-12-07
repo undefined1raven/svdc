@@ -111,21 +111,19 @@
 						style="left: {20 * branch.depth}px;"
 						class="relative flex flex-grow items-center gap-2 rounded-md"
 					>
-						<div class="h-full w-1 bg-color"></div>
-						<div
-							onclick={() => handleMenuClick(ix)}
+						<div class="h-[80%] w-1 bg-color"></div>
+						<button
+							onclick={() => {
+								handleMenuClick(ix);
+								handleExpand(ix);
+							}}
 							class=" transition-transition linear hover:bg-color40 flex h-full w-auto min-w-[250px] cursor-pointer items-center justify-between rounded-md border border-color bg-color20 p-2 transition-all duration-100"
 						>
 							<span>
 								{branch.name}
 							</span>
 							{#if branch.canExtend}
-								<button
-									onclick={() => {
-										handleExpand(ix);
-									}}
-									class="flex h-full w-16 items-center justify-center pl-8"
-								>
+								<div class="flex h-full w-16 items-center justify-center pl-8">
 									<div
 										style="transform: rotate({getDropdownRotation(ix)});"
 										class="linear h-full w-full transition-all duration-100"
@@ -133,9 +131,9 @@
 										<DropdownDeco color={$globalStyle.color} classNames="w-full h-full"
 										></DropdownDeco>
 									</div>
-								</button>
+								</div>
 							{/if}
-						</div>
+						</button>
 					</div>
 				</div>
 			</FadeInContainer>
