@@ -69,14 +69,14 @@
 	}
 
 	$effect(() => {
-		if (typeof window !== 'undefined' && window.location.hash.length > 0 && files.length > 0) {
+		if (typeof window !== 'undefined' && files.length > 0) {
 			processHash(window.location.hash);
 		}
 	});
 
 	onMount(() => {
 		windowHash.subscribe((hash) => {
-			if (hash.length > 0 && files.length > 0) {
+			if (typeof hash === 'string' && files.length > 0) {
 				processHash(hash);
 			}
 		});

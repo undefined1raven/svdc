@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
 function getHash() {
-	if (typeof window === 'undefined') return '';
+	if (typeof window === 'undefined') return null;
 	return window.location.hash;
 }
 
