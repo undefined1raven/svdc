@@ -11,6 +11,26 @@
 	import { embedConfig } from '../stores/embedConfig';
 	onMount(() => {
 		if (typeof window !== 'undefined') {
+			window.addEventListener('message', (event) => {
+				if (event.data.type === 'theme') {
+					console.log(event);
+				}
+			});
+
+			const urlParams = new URLSearchParams(window.location.search);
+			const paramsObject: { [key: string]: string } = {};
+			urlParams.forEach((value, key) => {
+				paramsObject[key] = value;
+			});
+			console.log(paramsObject);
+			if (paramsObject.embed === 'true') {
+				embedConfig.set({
+					showFooter: false,
+					showThemeController: false,
+					showHeader: false
+				});
+			}
+
 			const themes = getThemes();
 			const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 			const themeOverride = sessionStorage.getItem('theme');
