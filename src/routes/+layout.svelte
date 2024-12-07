@@ -61,6 +61,7 @@
 					const key = keys[ix];
 					if (colorKeys.includes(key)) {
 						document.documentElement.style.setProperty(`--${key + '20'}`, value[key] + '20');
+						document.documentElement.style.setProperty(`--${key + '40'}`, value[key] + '40');
 					}
 					document.documentElement.style.setProperty(`--${keys[ix]}`, value[key]);
 				}
@@ -90,5 +91,21 @@
 		font-weight: 400;
 		transition: all linear 0.1s;
 		font-style: normal;
+	}
+	:global(::-webkit-scrollbar) {
+		width: 8px;
+	}
+
+	:globlal(div::-webkit-scrollbar-track) {
+		background: #f1f1f100;
+	}
+
+	:global(div::-webkit-scrollbar-thumb) {
+		background: var(--color);
+		border-radius: 6px;
+	}
+
+	:global(div::-webkit-scrollbar-thumb:hover) {
+		background: var(--accentColor);
 	}
 </style>

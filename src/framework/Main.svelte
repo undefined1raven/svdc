@@ -11,9 +11,11 @@
 	import header from '../config/header.json';
 	import FlyInContainer from '../components/common/FlyInContainer.svelte';
 	import Tree from './Tree.svelte';
+	import { screenSize } from '../stores/screenSize.svelte';
+	import { files } from '../stores/files';
 	const md = markdownit();
 
-	let files: IDoc[] = $state([]);
+	let localFiles: IDoc[] = $state([]);
 	let padding = $state('');
 	async function loadTree() {
 		tree.set(treeConfig);
@@ -22,7 +24,7 @@
 	$effect(() => {
 		let newPadding = '';
 		if ($embedConfig.showThemeController === true) {
-			newPadding += ' pt-14';
+			newPadding += ' pt-16';
 		} else {
 			newPadding += ' pt-2';
 		}
@@ -53,12 +55,13 @@
 		for (let ix = 0; ix < results.length; ix++) {
 			const result = results[ix];
 		}
-		files = results;
+		localFiles = results;
+		files.set(results);
 		return results;
 	}
 
 	function processHash(hash: string) {
-		const relDoc: IDoc | undefined = files.find((doc) => {
+		const relDoc: IDoc | undefined = localFiles.find((doc) => {
 			return '#' + doc.route === hash;
 		});
 		if (relDoc) {
@@ -69,14 +72,14 @@
 	}
 
 	$effect(() => {
-		if (typeof window !== 'undefined' && files.length > 0) {
+		if (typeof window !== 'undefined' && localFiles.length > 0) {
 			processHash(window.location.hash);
 		}
 	});
 
 	onMount(() => {
 		windowHash.subscribe((hash) => {
-			if (typeof hash === 'string' && files.length > 0) {
+			if (typeof hash === 'string' && localFiles.length > 0) {
 				processHash(hash);
 			}
 		});
@@ -94,7 +97,7 @@
 
 <div class="absolute flex h-full w-full flex-row gap-4 p-14 {padding} pl-2 pr-2">
 	<FlyInContainer x={-15} duration={150}>
-		<div class="h-full w-96" id="side-bar">
+		<div class="flex h-full w-96 flex-col gap-4" id="side-bar">
 			{#if $embedConfig.showHeader === true}
 				<div class="flex h-auto w-full flex-row rounded-xl bg-color20 p-5">
 					{#if header.logo !== null}{/if}
@@ -108,8 +111,10 @@
 						<span class="text-sm text-inactive-text">Technical Documentation</span>
 					</div>
 				</div>
-				<Tree></Tree>
 			{/if}
+			<div class="h-[90vh] flex-grow overflow-y-auto rounded-md">
+				<Tree></Tree>
+			</div>
 		</div>
 	</FlyInContainer>
 

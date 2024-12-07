@@ -12,7 +12,7 @@ const globalStyle = writable({
 	accentColor: '#5343B6',
 	accentTextColor: '#53489B',
 	inactiveColor: '#9D8DFF',
-	inactiveTextColor: '#624FD9',
+	inactiveTextColor: '#624FAA',
 	pageColor1: '#B7B2FA',
 	pageColor2: '#9F99F4',
 	pageColor3: '#A5A2D9'
