@@ -12,9 +12,7 @@
 	onMount(() => {
 		if (typeof window !== 'undefined') {
 			window.addEventListener('message', (event) => {
-				if (event.data.type === 'theme') {
-					console.log(event);
-				}
+				console.log(event);
 			});
 
 			const urlParams = new URLSearchParams(window.location.search);
@@ -29,6 +27,10 @@
 					showThemeController: false,
 					showHeader: false
 				});
+			}
+			if (paramsObject.theme === 'dark' || paramsObject.theme === 'light') {
+				sessionStorage.setItem('theme', paramsObject.theme);
+				theme.set(paramsObject.theme);
 			}
 
 			const themes = getThemes();
