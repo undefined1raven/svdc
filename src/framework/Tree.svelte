@@ -38,77 +38,82 @@
 
 	function handleExpand(index: number) {
 		const item = currentTree[index];
-		const currentDepth = item.depth;
-		const newTree: any = [...ct.splice(0, index + 1)];
-		const nextItemIndex = index + 1;
-		if (currentTree[nextItemIndex]?.depth > currentDepth) {
-			console.log('here');
-			let lastExtendedItemIndex = nextItemIndex;
-			for (let ix = nextItemIndex; ix < ct.length; ix++) {
-				const loopItem = ct[ix];
-				if (loopItem.depth === currentDepth) {
-					lastExtendedItemIndex = ix + 1;
-					break;
-				}
-			}
-			const restOfTimes = currentTree.slice(lastExtendedItemIndex + 1, currentTree.length);
-			console.log('restOfTimes', restOfTimes);
-			newTree.push(...restOfTimes);
-		} else {
-			console.log('there');
-			const extendedItems: any = [];
-			let lastExtendedItemIndex = 0;
-			for (let ix = nextItemIndex; ix < $tree.length; ix++) {
-				const nextItem = $tree[ix];
-				if (nextItem.depth > currentDepth) {
-					if (nextItem.depth - currentDepth === 1) {
-						lastExtendedItemIndex = ix;
-						extendedItems.push({
-							...nextItem,
-							canExtend: $tree[ix + 1] && $tree[ix + 1].depth > nextItem.depth
-						});
-					}
-				} else {
-					break;
-				}
-			}
-			newTree.push(...extendedItems);
-			const restOfItems = $tree.slice(lastExtendedItemIndex + 1);
-			newTree.push(...restOfItems);
+		const treeIndex = $tree.findIndex((treeItem) => treeItem.name === item.name);
+		const nextTreeIndex = treeIndex + 1;
+		if (!$tree[nextTreeIndex]) {
+			return;
 		}
-        currentTree = newTree;
+		const nextCurrentTreeIndex = index + 1;
+		const currentDepth = item.depth;
+		const nextDepth = $tree[nextTreeIndex].depth;
+		if (
+			nextDepth > currentDepth &&
+			(currentTree[nextCurrentTreeIndex].depth === currentDepth ||
+				currentDepth > currentTree[nextCurrentTreeIndex].depth)
+		) {
+			const newCurrentTree = currentTree.slice(0, index + 1);
+			let lastExtendedItemIndex = 0;
+			for (let ix = nextTreeIndex; ix < $tree.length; ix++) {
+				const nextItem = $tree[ix];
+				if (nextItem.depth <= currentDepth) {
+					lastExtendedItemIndex = ix;
+					break;
+				}
+				if (nextItem.depth === currentDepth + 1) {
+					newCurrentTree.push({
+						...nextItem,
+						canExtend: $tree[ix + 1] && $tree[ix + 1].depth > nextItem.depth
+					});
+				}
+			}
+			const restOfItems = currentTree.slice(index + 1, currentTree.length);
+			newCurrentTree.push(...restOfItems);
+			currentTree = newCurrentTree;
+		} else {
+			console.log('here');
+			const newCurrentTree = currentTree.slice(0, index + 1);
+			let endIndex = 0;
+			for (let ix = index + 1; ix < currentTree.length; ix++) {
+				const nextItem = currentTree[ix];
+				if (nextItem.depth <= currentDepth) {
+					endIndex = ix;
+					break;
+				}
+			}
+			const restOfItems = currentTree.slice(endIndex, currentTree.length);
+			newCurrentTree.push(...restOfItems);
+			currentTree = newCurrentTree;
+		}
 	}
 </script>
 
 <div class="h-auto w-full">
 	<div class="flex h-full w-full flex-col gap-1 overflow-x-hidden rounded-md">
 		{#each currentTree as branch, ix}
-			<FlyInContainer delay={50 * ix}>
-				<div class="hover:bg-color40 flex h-12 flex-row text-text">
+			<div class="hover:bg-color40 flex h-12 flex-row text-text">
+				<div
+					style="left: {20 * branch.depth}px;"
+					class="relative flex flex-grow items-center gap-2 rounded-md"
+				>
+					<div class="h-full w-[2px] bg-color"></div>
 					<div
-						style="left: {20 * branch.depth}px;"
-						class="relative flex flex-grow items-center gap-2 rounded-md"
+						onclick={() => handleMenuClick(ix)}
+						class="transition-transition linear hover:bg-color40 flex h-full w-auto min-w-[250px] items-center justify-between rounded-md border border-color bg-color20 p-2 transition-all duration-100"
 					>
-						<div class="h-full w-[2px] bg-color"></div>
-						<div
-							onclick={() => handleMenuClick(ix)}
-							class="transition-transition linear hover:bg-color40 flex h-full w-auto min-w-[250px] items-center justify-between rounded-md border border-color bg-color20 p-2 transition-all duration-100"
-						>
-							<span>
-								{branch.name}
-							</span>
-							{#if branch.canExtend}
-								<button
-									onclick={() => {
-										handleExpand(ix);
-									}}
-									class="h-full w-12 bg-red-400"
-								></button>
-							{/if}
-						</div>
+						<span>
+							{branch.name}
+						</span>
+						{#if branch.canExtend}
+							<button
+								onclick={() => {
+									handleExpand(ix);
+								}}
+								class="h-full w-12 bg-red-400"
+							></button>
+						{/if}
 					</div>
 				</div>
-			</FlyInContainer>
+			</div>
 		{/each}
 	</div>
 </div>
