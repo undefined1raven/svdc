@@ -3,10 +3,11 @@
 	import { tree } from '../stores/tree';
 	import FlyInContainer from '../components/common/FlyInContainer.svelte';
 	import { files } from '../stores/files';
-	import { activeMdContent } from '../stores/activeMdContent';
+	import { activeMdContent, activeMdContentTitle } from '../stores/activeMdContent';
 	import DropdownDeco from '../deco/DropdownDeco.svelte';
 	import FadeInContainer from '../components/common/FadeInContainer.svelte';
 	import { globalStyle } from '../stores/globalStyle.svelte';
+	import isMobile from '../utils/isMobile';
 
 	let currentTree = $state([]);
 
@@ -16,6 +17,8 @@
 			const newFile = $files.find((file) => file.name === item.name);
 			if (newFile) {
 				window.location.hash = `${newFile.route}`;
+				console.log(newFile.name, "xx1");
+				activeMdContentTitle.set(newFile.name);
 				activeMdContent.set(newFile.markdown);
 			}
 		}
@@ -103,10 +106,10 @@
 </script>
 
 <div class="h-auto w-full">
-	<div class="flex h-full w-full flex-col gap-1 overflow-x-hidden rounded-md">
+	<div class="flex h-full w-full flex-col gap-1 overflow-x-scroll rounded-md">
 		{#each currentTree as branch, ix}
 			<FadeInContainer duration={80}>
-				<div class="hover:bg-color40 flex h-12 flex-row text-text">
+				<div class="hover:bg-color40 flex {isMobile() ? 'h-16' : 'h-12'}  flex-row text-text">
 					<div
 						style="left: {20 * branch.depth}px;"
 						class="relative flex flex-grow items-center gap-2 rounded-md"
@@ -117,7 +120,9 @@
 								handleMenuClick(ix);
 								handleExpand(ix);
 							}}
-							class=" transition-transition linear hover:bg-color40 flex h-full w-auto min-w-[250px] cursor-pointer items-center justify-between rounded-md border border-color bg-color20 p-2 transition-all duration-100"
+							class=" transition-transition linear hover:bg-color40 flex h-full w-auto {isMobile()
+								? 'min-w-[325px]'
+								: 'min-w-[250px]'} cursor-pointer items-center justify-between rounded-md border border-color bg-color20 p-2 transition-all duration-100"
 						>
 							<span>
 								{branch.name}

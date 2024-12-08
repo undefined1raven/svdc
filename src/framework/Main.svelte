@@ -3,7 +3,7 @@
 	import { tree } from '../stores/tree';
 	//@ts-ignore
 	import markdownit from 'markdown-it';
-	import { activeMdContent } from '../stores/activeMdContent';
+	import { activeMdContent, activeMdContentTitle } from '../stores/activeMdContent';
 	const modules = import.meta.glob('/src/docs/*.json');
 	import treeConfig from '../config/tree.json';
 	import windowHash from '../stores/windowHash';
@@ -17,6 +17,7 @@
 	import { globalStyle } from '../stores/globalStyle.svelte';
 	import XMark from '../deco/XMark.svelte';
 	import FadeInContainer from '../components/common/FadeInContainer.svelte';
+	import isMobile from '../utils/isMobile';
 	const md = markdownit();
 
 	let localFiles: IDoc[] = $state([]);
@@ -69,6 +70,8 @@
 			return '#' + doc.route === hash;
 		});
 		if (relDoc) {
+			console.log(relDoc.title, 'xx2');
+			activeMdContentTitle.set(relDoc.title);
 			activeMdContent.set(relDoc.markdown);
 		} else {
 			window.location.hash = '/';
@@ -108,9 +111,17 @@
 	});
 </script>
 
-<div class="absolute flex h-full w-full flex-row gap-4 p-14 {padding} pl-2 pr-2">
+<div
+	class="absolute flex h-full w-full {isMobile()
+		? 'flex-col'
+		: 'flex-row'} gap-4 p-14 {padding} pl-2 pr-2"
+>
 	<div class="flex flex-col gap-3">
-		<FlyInContainer x={-15} duration={150} classname="flex sm:flex md:flex lg:hidden">
+		<FlyInContainer
+			x={-15}
+			duration={150}
+			classname="flex gap-2 flex-row w-full sm:flex md:flex lg:hidden"
+		>
 			<button
 				onclick={() => (showSidebar = !showSidebar)}
 				class="linear flex h-10 w-10 items-center justify-center rounded-xl border border-color transition-all duration-100 hover:bg-color20"
@@ -125,6 +136,11 @@
 					</FadeInContainer>
 				{/if}
 			</button>
+			{#if isMobile() === true && $embedConfig.showHeader === true}
+				<div class="flex flex-grow items-center justify-start rounded-xl bg-color20 p-2">
+					{header.title} / {$activeMdContentTitle}
+				</div>
+			{/if}
 		</FlyInContainer>
 		{#if showSidebar || $screenSize.width > 1024}
 			<FlyInContainer x={-15} duration={150}>
@@ -151,7 +167,7 @@
 		{/if}
 	</div>
 	{#if !showSidebar || $screenSize.width > 1024}
-		<FlyInContainer duration={150}>
+		<FlyInContainer classname="w-full overflow-scroll" duration={150}>
 			<div class="flex-grow">{@html result}</div>
 		</FlyInContainer>
 	{/if}

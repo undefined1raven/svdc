@@ -9,9 +9,9 @@
 	const buttonStyle = `flex hover:bg-color20 transition-all linear duration-75 h-full ${isMobile() ? 'w-full' : 'w-1/2'}  items-center justify-center`;
 </script>
 
-<FadeInContainer duration={200} >
+<FadeInContainer duration={200}>
 	<div
-		class="absolute left-2 top-1 flex {isMobile() ? 'h-8' : 'h-12'} {isMobile()
+		class="absolute left-2 top-1 flex {isMobile() ? 'h-12' : 'h-12'} {isMobile()
 			? 'w-20'
 			: 'w-32'} flex-row rounded-xl border border-color"
 	>
@@ -32,7 +32,7 @@
 					sessionStorage.setItem('theme', 'dark');
 					theme.set('dark');
 				}}
-				class={buttonStyle + ' border-l border-color'}
+				class={buttonStyle + ` ${isMobile() === false && 'border-l border-color'}`}
 			>
 				<LunaDeco color={$globalStyle.color}></LunaDeco>
 			</button>
