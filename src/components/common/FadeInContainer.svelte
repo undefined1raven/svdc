@@ -2,7 +2,14 @@
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
 
-	const { delay = 0, duration = 500, children, classname = '' } = $props();
+	const {
+		delay = 0,
+		duration = 500,
+		children,
+		classname = '',
+		outDuration = 0,
+		outDelay = 0
+	} = $props();
 	let isMounted = $state(false);
 
 	onMount(() => {
@@ -11,7 +18,11 @@
 </script>
 
 {#if isMounted}
-	<div class={classname} in:fade={{ duration, delay }}>
+	<div
+		class={classname}
+		out:fade={{ duration: outDuration, delay: outDelay }}
+		in:fade={{ duration, delay }}
+	>
 		{@render children()}
 	</div>
 {/if}

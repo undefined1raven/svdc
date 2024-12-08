@@ -13,6 +13,10 @@
 	import Tree from './Tree.svelte';
 	import { screenSize } from '../stores/screenSize.svelte';
 	import { files } from '../stores/files';
+	import HamburgerIcon from '../deco/HamburgerIcon.svelte';
+	import { globalStyle } from '../stores/globalStyle.svelte';
+	import XMark from '../deco/XMark.svelte';
+	import FadeInContainer from '../components/common/FadeInContainer.svelte';
 	const md = markdownit();
 
 	let localFiles: IDoc[] = $state([]);
@@ -93,34 +97,64 @@
 		const newContent = $activeMdContent;
 		result = md.render(newContent);
 	});
+
+	let showSidebar = $state(false);
+
+	$effect(() => {
+		console.log($screenSize);
+		if ($screenSize.width > 1023) {
+			showSidebar = false;
+		}
+	});
 </script>
 
 <div class="absolute flex h-full w-full flex-row gap-4 p-14 {padding} pl-2 pr-2">
-	<FlyInContainer x={-15} duration={150}>
-		<div class="flex h-full w-96 flex-col gap-4" id="side-bar">
-			{#if $embedConfig.showHeader === true}
-				<div class="flex h-auto w-full flex-row rounded-xl bg-color20 p-5">
-					{#if header.logo !== null}{/if}
-					<div class="flex flex-col items-start">
-						{#if header.title !== null}
-							<h1 class="text-center">{header.title}</h1>
-						{/if}
-						{#if header.subtitle !== null}
-							<h2 class="text-center">{header.subtitle}</h2>
-						{/if}
-						<span class="text-sm text-inactive-text">Technical Documentation</span>
+	<div class="flex flex-col gap-3">
+		<FlyInContainer x={-15} duration={150} classname="flex sm:flex md:flex lg:hidden">
+			<button
+				onclick={() => (showSidebar = !showSidebar)}
+				class="linear flex h-10 w-10 items-center justify-center rounded-xl border border-color transition-all duration-100 hover:bg-color20"
+			>
+				{#if showSidebar}
+					<FadeInContainer duration={75}>
+						<XMark color={$globalStyle.color}></XMark>
+					</FadeInContainer>
+				{:else}
+					<FadeInContainer duration={75}>
+						<HamburgerIcon color={$globalStyle.color}></HamburgerIcon>
+					</FadeInContainer>
+				{/if}
+			</button>
+		</FlyInContainer>
+		{#if showSidebar || $screenSize.width > 1024}
+			<FlyInContainer x={-15} duration={150}>
+				<div class="flex h-full w-96 flex-col gap-4" id="side-bar">
+					{#if $embedConfig.showHeader === true}
+						<div class="flex h-auto w-full flex-row rounded-xl bg-color20 p-5">
+							{#if header.logo !== null}{/if}
+							<div class="flex flex-col items-start">
+								{#if header.title !== null}
+									<h1 class="text-center">{header.title}</h1>
+								{/if}
+								{#if header.subtitle !== null}
+									<h2 class="text-center">{header.subtitle}</h2>
+								{/if}
+								<span class="text-sm text-inactive-text">Technical Documentation</span>
+							</div>
+						</div>
+					{/if}
+					<div class="h-[90vh] flex-grow overflow-y-auto rounded-md">
+						<Tree></Tree>
 					</div>
 				</div>
-			{/if}
-			<div class="h-[90vh] flex-grow overflow-y-auto rounded-md">
-				<Tree></Tree>
-			</div>
-		</div>
-	</FlyInContainer>
-
-	<FlyInContainer x={15} duration={150}>
-		<div class="flex-grow">{@html result}</div>
-	</FlyInContainer>
+			</FlyInContainer>
+		{/if}
+	</div>
+	{#if !showSidebar || $screenSize.width > 1024}
+		<FlyInContainer duration={150}>
+			<div class="flex-grow">{@html result}</div>
+		</FlyInContainer>
+	{/if}
 </div>
 
 <style>

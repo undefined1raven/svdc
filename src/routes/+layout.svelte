@@ -11,10 +11,6 @@
 	import { embedConfig } from '../stores/embedConfig';
 	onMount(() => {
 		if (typeof window !== 'undefined') {
-			window.addEventListener('message', (event) => {
-				console.log(event);
-			});
-
 			const urlParams = new URLSearchParams(window.location.search);
 			const paramsObject: { [key: string]: string } = {};
 			urlParams.forEach((value, key) => {
